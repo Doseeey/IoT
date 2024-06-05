@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+	<!-- See: https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface -->
+	<title>The WSGI mpg to l/100km converter</title>
+	<style>
+		form {
+			text-align: center;
+		}
+
+		p {
+			text-align: center;
+		}
+
+		body {
+			background-color: lightgoldenrodyellow;
+		}
+	</style>
+</head>
+<body>
+	<hr />
+	<p>
+		<a href="https://1drv.ms/f/s!ArXn9WU5Ugjzq81b8reRi8AZmARf3w" target="_blank">
+		<img src="/imgs/SFP.JPEG" width="680" title="&#128739; San Francisco Peaks @ Route 66 &#128739;" alt="Journey, not a destination...">
+		</a>
+	</p>
+	<hr />
+	<form method="GET" action="http://localhost:8006/converter">
+		<input type="number"
+			   value="42"
+			   name="MPG"
+			   title="It’s not the years, it’s the mileage (and YMMV...)"
+			   min="0" max="100" required />
+		mpg to l/100km
+		<input type="submit"
+			   value="Convert on-line I"
+			   title="☁️☁️☁️ CGI Cloudy [out-there] converter ☁️☁️☁️" />
+	</form>
+	<hr />
+	<p>
+		<input id="MPG"
+			   value="33"
+			   type="number"
+			   title="X [mpg] = 100(3.8/1.6)/X [l/100km]"
+			   min="0" max="100" required>
+		mpg to l/100km
+		<button onclick="convert()"
+				title="🌫️🌫️🌫️ JS Foggy [in-situ] converter 🌫️🌫️🌫️">
+			Convert in-line
+		</button>
+	</p>
+	<p id="lkm"></p><hr />	<p>
+		<input id="MPGC"
+			   value="37"
+			   type="number"
+			   title="X [mpg] = 235/X [l/100km]"
+			   min="0" max="100" required>
+		mpg to l/100km
+		<button onclick="cloud_convert()"
+				title="☁️☁️☁️ JS Cloudy [out-there] converter ☁️☁️☁️">
+			Convert on-line II
+		</button>
+	</p><hr />
+	<script type="text/javascript">
+		function convert()
+		{
+			// liter per gallon / km per mile * 100 km
+            var mpc = (3.78541178 / 1.609344) * 100 // = 235.214583 (a.k.a. Uranium 235!)
+			var mph = document.getElementById("MPG")
+			var mpv = mph.value
+			if (mph.checkValidity())
+			{
+				document.getElementById("lkm").innerHTML
+					= "I betcha you gotcha "
+					+ (mpc / mpv).toFixed(1)
+					+ "l/100km!"
+			}
+		}
+		function cloud_convert()
+		{
+            let path = location.protocol + '//' + location.hostname + ':' + location.port + '/converter';
+			let url = new URL(path);
+			let value = document.getElementById("MPGC").value;
+			url.searchParams.set('MPG', value); // added parameter with a space and !
+
+			var xhttp = new XMLHttpRequest();
+			xhttp.open("GET", url, true);
+			xhttp.send();
+			xhttp.onreadystatechange = function ()
+			{
+				if (this.readyState == 4 && this.status == 200)
+				{
+					document.getElementById("lkm").innerHTML = this.responseText;
+				}
+			}
+		}
+	</script>
+</body>
+</html>
